@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Essence | Official Band Website</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+:root{--accent:#ff2e4c;--bg:#000;--text:#eee;--card-bg:#0f0f0f}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+/* Header */
+header{position:sticky;top:0;z-index:1000;background:rgba(0,0,0,0.68);backdrop-filter:blur(12px);padding:.8rem 1rem;display:flex;align-items:center;justify-content:space-between}
+header img{width:60px}
+nav a{color:var(--text);margin:0 12px;text-decoration:none;font-weight:600;position:relative}
+nav a::after{content:'';position:absolute;left:0;bottom:-4px;width:0;height:2px;background:var(--accent);transition:0.3s}
+nav a:hover::after{width:100%}
+/* Hero */
+.hero{height:85vh;display:flex;align-items:center;justify-content:center;text-align:center;background:linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.7)),url('bandphoto1.jpg') center/cover fixed no-repeat;color:#fff;padding:0 1rem;position:relative}
+.hero h1{font-size:3rem;font-weight:700;margin:0}
+.typed-text{color:var(--accent)}
+/* Sections */
+section{max-width:1000px;margin:auto;padding:4rem 1.5rem}
+section h2{text-align:center;margin-bottom:2rem;border-bottom:2px solid var(--accent);display:inline-block;padding-bottom:.3rem}
+/* Members */
+.members{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem}
+.member{background:var(--card-bg);padding:1.5rem;text-align:center;border-radius:12px;transition:transform .35s ease,box-shadow .35s ease}
+.member:hover{transform:translateY(-6px) scale(1.03);box-shadow:0 0 18px rgba(255,46,76,0.45)}
+.member-img{width:150px;height:150px;border-radius:50%;object-fit:cover;margin-bottom:1rem;background:#111}
+/* Music */
+.coming-soon{text-align:center;font-size:1.4rem;font-weight:600;padding:2.5rem 1rem;color:var(--accent);animation:pulse 1.8s infinite ease-in-out}
+@keyframes pulse{0%{opacity:.5;transform:scale(.95)}50%{opacity:1;transform:scale(1)}100%{opacity:.5;transform:scale(.95)}}
+.music-embed{display:flex;justify-content:center;margin-top:1.5rem}
+/* Shows */
+.shows{display:grid;gap:1.2rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.show{background:var(--card-bg);padding:1.4rem;border-radius:10px;text-align:center;border-left:4px solid var(--accent)}
+/* Gallery */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+.gallery-grid img{width:100%;border-radius:10px;object-fit:cover;transition:transform .35s ease,box-shadow .35s ease}
+.gallery-grid img:hover{transform:scale(1.05);box-shadow:0 0 28px var(--accent)}
+/* CTA */
+.cta{display:inline-block;margin-top:2rem;padding:.8rem 1.6rem;background:var(--accent);color:#fff;font-weight:600;border-radius:6px;text-decoration:none;transition:transform .25s ease}
+.cta:hover{transform:translateY(-3px)}
+/* Footer */
+footer{text-align:center;padding:2rem 0;margin-top:4rem;background:#050505}
+.socials a{margin:0 8px;font-size:1.3rem;color:var(--accent);text-decoration:none;transition:opacity .3s}
+.socials a:hover{opacity:.6}
+/* Fade-in */
+.fade{opacity:0;transform:translateY(25px);transition:opacity .9s ease,transform .9s ease}
+.fade.visible{opacity:1;transform:translateY(0)}
+/* Loader */
+#loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:2000}
+.spinner{width:72px;height:72px;border-radius:50%;box-shadow:0 0 0 6px rgba(255,46,76,0.12) inset,0 0 24px rgba(255,46,76,0.06);animation:spin 1.4s linear infinite}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+/* Particles canvas sits behind content */
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+/* ensure main content sits above particles */
+main,header,section,footer{position:relative;z-index:2}
+/* responsive tweaks */
+@media(max-width:600px){.hero h1{font-size:1.8rem}.member-img{width:120px;height:120px}}
+  </style>
+</head>
+<body>
+  <div id="loader"><div class="spinner"></div></div>
+  <canvas id="particles"></canvas>
+<header>
+  <img src="blacklogo.png" alt="The Essence Logo">
+  <nav>
+    <a href="#about">About</a>
+    <a href="#members">Members</a>
+    <a href="#music">Music</a>
+    <a href="#shows">Shows</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<section class="hero fade">
+  <h1>Feel The <span class="typed-text"></span></h1>
+</section>
+
+<section id="about" class="fade">
+  <h2>About Us</h2>
+  <p>The Essence is more than just a band — it's a collective of musicians and storytellers rooted in Nepal's vibrant cultural heartbeat. We blend traditional sensibilities with contemporary sounds to craft songs that feel at once familiar and refreshingly new. Each composition is a snapshot of our journeys — love, loss, joy, and the messy in-between.</p>
+  <p>On stage, we aim to create an immersive experience: big rhythms, intimate moments, and a connection that bridges performer and listener. Our music is melodic yet raw, polished yet honest — designed to move people and stay with them long after the last chord fades. We rehearse with discipline and perform with the freedom of the moment.</p>
+  <p>Beyond performances, The Essence believes in collaboration and community. We work with local artists, support cultural events, and invite fans into the creative process through workshops and live Q&amp;A sessions. Whether you're hearing us for the first time or you've been with us from the start, our promise is simple: authentic music made with heart.</p>
+</section>
+
+<section id="members" class="fade">
+  <h2>Band Members</h2>
+  <div class="members">
+    <div class="member fade"><img class="member-img" src="1-modified.png" alt="Sara Maharjan"> <strong>Sara Maharjan</strong><br>Vocal</div>
+    <div class="member fade"><img class="member-img" src="2-modified.png" alt="Saksham Shakya"> <strong>Saksham Shakya</strong><br>Lead Guitar</div>
+    <div class="member fade"><img class="member-img" src="4-modified.png" alt="Richan Gopali"> <strong>Richan Gopali</strong><br>Rhythm Guitar</div>
+    <div class="member fade"><img class="member-img" src="5-modified.png" alt="Amit Bujhel"> <strong>Amit Bujhel</strong><br>Bass</div>
+    <div class="member fade"><img class="member-img" src="3-modified.png" alt="Risen Ale Magar"> <strong>Risen Ale Magar</strong><br>Drums</div>
+    <div class="member fade"><img class="member-img" src="bbk.png" alt="Bibek Bhattarai"> <strong>Bibek Bhattarai</strong><br>Manager</div>
+  </div>
+  <a href="#contact" class="cta">Book Us</a>
+</section>
+
+<section id="music" class="fade">
+  <h2>Music</h2>
+  <div class="coming-soon">🎵 <span>Music Coming Soon</span> 🎵</div>
+</section>
+
+<section id="shows" class="fade">
+  <h2>Upcoming Shows</h2>
+  <div class="shows">
+    <div class="show">COMING SOON</div>
+    <div class="show">COMING SOON</div>
+    <div class="show">COMING SOON</div>
+  </div>
+</section>
+
+<section id="gallery" class="fade">
+  <h2>Gallery</h2>
+  <div class="gallery-grid">
+    <img src="bandphoto1.jpg" alt="Band Photo 1">
+    <img src="bandphoto2.jpg" alt="Band Photo 2">
+    <img src="essencetext.png" alt="Band Photo 3">
+    <img src="symbol.png" alt="Band Photo 4">
+    <img src="whitelogo.png" alt="Band Photo 5">
+    <img src="blacklogo.png" alt="Band Photo 6">
+  </div>
+</section>
+
+<section id="contact" class="fade">
+  <h2>Contact</h2>
+  <p>Email: <a href="https://mail.google.com/">theessenceband5@gmail.com</a></p>
+  <p>Phone: <a href="https://www.whatsapp.com/">+977 9748432295</a></p>
+</section>
+
+<footer>
+  <div class="socials">
+    <a href="https://www.instagram.com/theessence_band/" aria-label="Instagram">🅾</a>
+  </div>
+  <p>&copy; 2025 The Essence. All Rights Reserved.</p>
+</footer>
+
+<script>
+// Preloader hide
+window.addEventListener('load',()=>{const loader=document.getElementById('loader');if(loader){loader.style.opacity=0;setTimeout(()=>loader.remove(),700)}});
+
+// Typed headline
+const words=["Rhythm","Soul","Energy","Essence"];let wi=0,ci=0,cur="",del=false;function type(){const el=document.querySelector('.typed-text');if(!el) return;cur=words[wi].slice(0,ci);el.textContent=cur;if(!del && ci++===words[wi].length){del=true;setTimeout(type,900);return}if(del && ci--===0){del=false;wi=(wi+1)%words.length}setTimeout(type,del?60:120)}type();
+
+// Intersection reveal
+const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting) e.target.classList.add('visible');});},{threshold:0.15});document.querySelectorAll('.fade').forEach(el=>observer.observe(el));
+
+// Particles (site-wide, medium soft D2)
+const canvas=document.getElementById('particles');const ctx=canvas.getContext('2d');function resize(){canvas.width=innerWidth;canvas.height=innerHeight}resize();addEventListener('resize',resize);
+let particles=Array.from({length:45},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.7+0.8,dx:(Math.random()-.5)*0.5,dy:(Math.random()-.5)*0.5,alpha:Math.random()*0.55+0.25}));
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);for(const p of particles){ctx.beginPath();ctx.fillStyle=`rgba(255,46,76,${p.alpha})`;ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();p.x+=p.dx;p.y+=p.dy;if(p.x<0||p.x>canvas.width) p.dx*=-1;if(p.y<0||p.y>canvas.height) p.dy*=-1;}requestAnimationFrame(draw)}draw();
+
+// Hover sound (soft pluck). Make sure hover.mp3 exists in same folder
+const hoverSound=new Audio('hover.mp3');hoverSound.volume=0.45;document.querySelectorAll('a, .member').forEach(el=>{el.addEventListener('mouseenter',()=>{try{hoverSound.currentTime=0;hoverSound.play()}catch(e){}})})
+
+// Countdown timer (shows until event date)
+function startCountdown(id, dateStr){const el=document.getElementById(id);if(!el) return;const target=new Date(dateStr).getTime();const iv=setInterval(()=>{const now=Date.now();const d=target-now;if(d<=0){el.style.display='none';clearInterval(iv);return}const days=Math.floor(d/86400000);const hrs=Math.floor((d%86400000)/3600000);const mins=Math.floor((d%3600000)/60000);const secs=Math.floor((d%60000)/1000);el.textContent=`Next show in ${days}d ${hrs}h ${mins}m ${secs}s`},1000)}
+// create a visible countdown element
+const cd=document.createElement('div');cd.id='countdown';cd.style.cssText='position:fixed;right:18px;bottom:18px;background:rgba(0,0,0,.6);padding:.7rem 1rem;border-radius:10px;border:1px solid rgba(255,46,76,.12);color:var(--text);z-index:1200;font-weight:600';document.body.appendChild(cd);startCountdown('countdown','2025-02-01T20:00:00');
+
+// Smooth scroll for internal links (native handled by CSS) - enhance: close mobile nav later if added
+</script>
+</body>
+</html>

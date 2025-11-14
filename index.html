@@ -160,8 +160,363 @@ const hoverSound=new Audio('hover.mp3');hoverSound.volume=0.45;document.querySel
 function startCountdown(id, dateStr){const el=document.getElementById(id);if(!el) return;const target=new Date(dateStr).getTime();const iv=setInterval(()=>{const now=Date.now();const d=target-now;if(d<=0){el.style.display='none';clearInterval(iv);return}const days=Math.floor(d/86400000);const hrs=Math.floor((d%86400000)/3600000);const mins=Math.floor((d%3600000)/60000);const secs=Math.floor((d%60000)/1000);el.textContent=`Next show in ${days}d ${hrs}h ${mins}m ${secs}s`},1000)}
 // create a visible countdown element
 const cd=document.createElement('div');cd.id='countdown';cd.style.cssText='position:fixed;right:18px;bottom:18px;background:rgba(0,0,0,.6);padding:.7rem 1rem;border-radius:10px;border:1px solid rgba(255,46,76,.12);color:var(--text);z-index:1200;font-weight:600';document.body.appendChild(cd);startCountdown('countdown','2025-02-01T20:00:00');
-
-// Smooth scroll for internal links (native handled by CSS) - enhance: close mobile nav later if added
 </script>
+<style>
+    body {
+        background: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        color: #ff2e4c;
+    }
+
+    #chatBox {
+        width: 100%;
+        height: 450px;
+        overflow-y: auto;
+        background: #0f0f0f;
+        border-radius: 10px;
+        padding: 15px;
+        box-sizing: border-box;
+        margin-bottom: 15px;
+        border: 2px solid #ff2e4c;
+    }
+
+    .msg {
+        padding: 10px;
+        margin: 8px 0;
+        max-width: 75%;
+        border-radius: 10px;
+    }
+
+    .user {
+        background: #ff2e4c;
+        margin-left: auto;
+    }
+
+    .admin {
+        background: #1a1a1a;
+        border-left: 3px solid #ff2e4c;
+    }
+
+    #inputArea {
+        display: flex;
+        gap: 10px;
+    }
+
+    input {
+        flex: 1;
+        padding: 12px;
+        border-radius: 8px;
+        border: none;
+        outline: none;
+        background: #1a1a1a;
+        color: #fff;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 12px 18px;
+        background: #ff2e4c;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    button:hover {
+        opacity: 0.7;
+    }
+    /* Floating Chat Icon */
+#chat-button {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #ff0000;
+    color: white;
+    font-size: 26px;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 9999;
+    transition: 0.3s ease;
+    box-shadow: 0 0 15px rgba(255,0,0,0.5);
+}
+
+#chat-button:hover {
+    transform: scale(1.1);
+}
+
+/* Slide Panel */
+#chat-panel {
+    position: fixed;
+    top: 0;
+    right: -350px; /* hidden */
+    width: 350px;
+    height: 100vh;
+    background: #111;
+    color: white;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.6);
+    transition: 0.4s ease;
+    z-index: 9998;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Chat Header */
+#chat-header {
+    padding: 15px;
+    background: #ff0000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#chat-header h3 {
+    margin: 0;
+}
+
+#close-chat {
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* Chat Messages */
+#chat-messages {
+    padding: 10px;
+    height: calc(100% - 140px);
+    overflow-y: auto;
+}
+
+/* Chat Input */
+#chat-input-area {
+    display: flex;
+    padding: 10px;
+    background: #222;
+}
+
+#chat-input {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    outline: none;
+    background: #333;
+    color: white;
+}
+
+#send-chat {
+    margin-left: 8px;
+    padding: 8px 15px;
+    background: #ff0000;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+</style>
+</head>
+<body>
+
+<h1>Chat With The Essence</h1>
+
+<div id="chatBox"></div>
+
+<div id="inputArea">
+    <input type="text" id="userMessage" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+// -------------------------------
+// FIREBASE SETUP
+// -------------------------------
+const firebaseConfig = {
+    apiKey: "AIzaSyBwEIiGPtOKWatNnYuIWzmZe3yUQgLAhxc",
+    authDomain: "theessencechat.firebaseapp.com",
+    databaseURL: "https://theessencechat-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "theessencechat",
+    storageBucket: "theessencechat.firebasestorage.app",
+    messagingSenderId: "704836914944",
+    appId: "1:704836914944:web:a359fa74bdecbf0c212de5"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// -------------------------------
+// UNIQUE USER ID SYSTEM
+// -------------------------------
+let userId = localStorage.getItem("essence_user_id");
+
+if (!userId) {
+    userId = "user_" + Math.floor(Math.random() * 999999999);
+    localStorage.setItem("essence_user_id", userId);
+}
+
+const adminId = "admin_bibekji";
+
+// -------------------------------
+// SEND MESSAGE
+// -------------------------------
+function sendMessage() {
+    const msg = document.getElementById("userMessage").value.trim();
+    if (!msg) return;
+
+    db.ref("messages").push({
+        user: userId,
+        text: msg,
+        time: Date.now(),
+        to: adminId
+    });
+
+    document.getElementById("userMessage").value = "";
+}
+
+// -------------------------------
+// DISPLAY MESSAGE IN CHAT
+// -------------------------------
+function appendMessage(m) {
+    const box = document.getElementById("chatBox");
+
+    let div = document.createElement("div");
+    div.classList.add("msg");
+
+    if (m.user === userId) {
+        div.classList.add("user");
+    } else {
+        div.classList.add("admin");
+    }
+
+    div.innerText = m.text;
+    box.appendChild(div);
+
+    box.scrollTop = box.scrollHeight;
+}
+
+// -------------------------------
+// RECEIVE MESSAGES
+// -------------------------------
+db.ref("messages").on("child_added", snap => {
+    const m = snap.val();
+
+    const fromUser = m.user === userId;
+    const fromAdmin = m.user === adminId && m.to === userId;
+
+    if (fromUser || fromAdmin) {
+        appendMessage(m);
+    }
+});
+</script>
+<!-- Floating Chat Button -->
+<div id="chat-button">
+    💬
+</div>
+
+<!-- Slide Chat Panel -->
+<div id="chat-panel">
+    <div id="chat-header">
+        <h3>The Essence Chat</h3>
+        <span id="close-chat">✖</span>
+    </div>
+
+    <div id="chat-messages"></div>
+
+    <div id="chat-input-area">
+        <input id="chat-input" type="text" placeholder="Type a message...">
+        <button id="send-chat">Send</button>
+    </div>
+</div>
+<script>
+const chatBtn = document.getElementById("chat-button");
+const chatPanel = document.getElementById("chat-panel");
+const closeChat = document.getElementById("close-chat");
+const messagesBox = document.getElementById("chat-messages");
+
+// Generate unique user ID
+let userID = localStorage.getItem("essence_user_id");
+if (!userID) {
+    userID = "user-" + Date.now() + "-" + Math.floor(Math.random() * 9999);
+    localStorage.setItem("essence_user_id", userID);
+}
+
+// ------------------------------------------
+// OPEN CHAT
+// ------------------------------------------
+chatBtn.addEventListener("click", () => {
+    chatPanel.style.right = "0px";
+    chatBtn.style.display = "none";
+});
+
+// CLOSE CHAT
+closeChat.addEventListener("click", () => {
+    chatPanel.style.right = "-350px";
+    setTimeout(() => chatBtn.style.display = "flex", 300);
+});
+
+// ------------------------------------------
+// SEND MESSAGE
+// ------------------------------------------
+document.getElementById("send-chat").onclick = sendMessage;
+
+function sendMessage() {
+    let message = document.getElementById("chat-input").value.trim();
+    if (message === "") return;
+
+    firebase.database().ref("messages/" + userID).push({
+        text: message,
+        time: Date.now(),
+        user: "client"
+    });
+
+    document.getElementById("chat-input").value = "";
+}
+
+// ------------------------------------------
+// DISPLAY MESSAGES (User + Admin)
+// ------------------------------------------
+firebase.database().ref("messages/" + userID).on("child_added", (snapshot) => {
+    let msg = snapshot.val();
+    let bubble = document.createElement("div");
+
+    bubble.innerText = msg.text;
+    bubble.style.maxWidth = "70%";
+    bubble.style.padding = "8px 12px";
+    bubble.style.margin = "8px";
+    bubble.style.borderRadius = "15px";
+    bubble.style.fontSize = "14px";
+
+    if (msg.user === "client") {
+        bubble.style.background = "#ff2e4c";
+        bubble.style.color = "white";
+        bubble.style.marginLeft = "auto";     // RIGHT SIDE
+        bubble.style.borderBottomRightRadius = "0px";
+    } else {
+        bubble.style.background = "#222";
+        bubble.style.color = "#fff";
+        bubble.style.marginRight = "auto";    // LEFT SIDE
+        bubble.style.borderBottomLeftRadius = "0px";
+    }
+
+    messagesBox.appendChild(bubble);
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+});
+</script>
+
+
+
 </body>
 </html>

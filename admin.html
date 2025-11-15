@@ -2,221 +2,218 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>The Essence | Admin Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-
+<title>Admin Panel - The Essence Chat</title>
 <style>
-body {
-  margin: 0;
-  font-family: 'Montserrat', sans-serif;
-  background: #000;
-  color: #fff;
-  display: flex;
-  height: 100vh;
-}
+    body {
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: white;
+        margin: 0;
+    }
 
-/* LEFT USER LIST */
-#user-list {
-  width: 260px;
-  background: #0d0d0d;
-  border-right: 2px solid #ff2e4c;
-  overflow-y: auto;
-}
+    /* Login screen */
+    #loginScreen {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
 
-#user-list h2 {
-  text-align: center;
-  padding: 20px;
-  border-bottom: 2px solid #ff2e4c;
-  margin: 0;
-  font-size: 20px;
-}
+    #loginScreen input {
+        padding: 10px;
+        margin: 5px;
+        width: 250px;
+        border-radius: 6px;
+        border: none;
+        outline: none;
+    }
 
-.user-item {
-  padding: 15px;
-  border-bottom: 1px solid #222;
-  cursor: pointer;
-  transition: 0.2s;
-}
+    #loginScreen button {
+        padding: 10px 20px;
+        background: #ff0077;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+    }
 
-.user-item:hover {
-  background: #ff2e4c33;
-}
+    /* Dashboard */
+    #adminPanel {
+        display: none;
+        padding: 20px;
+    }
 
-/* RIGHT CHAT AREA */
-#chat-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+    .userBox {
+        background: #222;
+        margin: 12px 0;
+        padding: 12px;
+        border-radius: 10px;
+    }
 
-#chat-header {
-  padding: 20px;
-  font-size: 18px;
-  font-weight: 600;
-  border-bottom: 2px solid #ff2e4c;
-}
+    .messages {
+        background: #333;
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 10px;
+    }
 
-#messages {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
+    .sent {
+        text-align: right;
+        color: #00eaff;
+    }
 
-/* Message bubbles */
-.msg {
-  max-width: 70%;
-  padding: 10px 14px;
-  margin: 10px 0;
-  border-radius: 12px;
-  font-size: 14px;
-}
+    .received {
+        text-align: left;
+        color: #ff62b7;
+    }
 
-.client {
-  background: #ff2e4c;
-  margin-left: auto;
-  color: #fff;
-  border-bottom-right-radius: 0;
-}
+    input[type=text] {
+        width: 80%;
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+        outline: none;
+    }
 
-.admin {
-  background: #222;
-  margin-right: auto;
-  color: #fff;
-  border-bottom-left-radius: 0;
-}
+    button {
+        padding: 8px 15px;
+        background: #ff0077;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+        margin-top: 5px;
+    }
 
-/* INPUT AREA */
-#input-area {
-  display: flex;
-  padding: 15px;
-  border-top: 2px solid #ff2e4c;
-  background: #0d0d0d;
-}
-
-#admin-msg {
-  flex: 1;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-}
-
-#send {
-  padding: 12px 22px;
-  margin-left: 10px;
-  background: #ff2e4c;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-}
-
-#send:hover {
-  background: #ff3f5c;
-}
+    .deleteBtn {
+        background: red;
+    }
 </style>
 </head>
 <body>
 
-<!-- LEFT SIDE: USERS -->
-<div id="user-list">
-  <h2>Users</h2>
-  <div id="users"></div>
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+    <h2>Admin Login</h2>
+    <input id="username" type="text" placeholder="Enter Username">
+    <input id="password" type="password" placeholder="Enter Password">
+    <button onclick="login()">Login</button>
+    <p id="loginError" style="color:red;"></p>
 </div>
 
-<!-- RIGHT: CHAT -->
-<div id="chat-area">
-  <div id="chat-header">Select a user</div>
-  <div id="messages"></div>
-
-  <div id="input-area">
-    <input type="text" id="admin-msg" placeholder="Type reply..." />
-    <button id="send">Send</button>
-  </div>
+<!-- ADMIN DASHBOARD -->
+<div id="adminPanel">
+    <h1>Admin Dashboard</h1>
+    <h3>All User Chats</h3>
+    <div id="userList"></div>
 </div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-database-compat.js"></script>
+<script type="module">
+/* --------------------- Firebase Setup ---------------------- */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-<script>
-// Your Firebase Setup
 const firebaseConfig = {
-  apiKey: "AIzaSyBwEIiGPtOKWatNnYuIWzmZe3yUQgLAhxc",
-  authDomain: "theessencechat.firebaseapp.com",
-  databaseURL: "https://theessencechat-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "theessencechat",
-  storageBucket: "theessencechat.firebasestorage.app",
-  messagingSenderId: "704836914944",
-  appId: "1:704836914944:web:a359fa74bdecbf0c212de5"
+    apiKey: "AIzaSyBwEIiGPtOKWatNnYuIWzmZe3yUQgLAhxc",
+    authDomain: "theessencechat.firebaseapp.com",
+    databaseURL: "https://theessencechat-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "theessencechat",
+    storageBucket: "theessencechat.firebasestorage.app",
+    messagingSenderId: "704836914944",
+    appId: "1:704836914944:web:a359fa74bdecbf0c212de5"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-let selectedUser = null;
+/* --------------------- Admin Login ---------------------- */
+function login() {
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
 
-// Load users
-db.ref("messages").on("value", (snap) => {
-  let users = snap.val();
-  let userList = document.getElementById("users");
-  userList.innerHTML = "";
-
-  for (let id in users) {
-    let div = document.createElement("div");
-    div.className = "user-item";
-    div.textContent = id;
-    div.onclick = () => openChat(id);
-    userList.appendChild(div);
-  }
-});
-
-// Open a user's chat
-function openChat(id) {
-  selectedUser = id;
-  document.getElementById("chat-header").textContent = "Chat with: " + id;
-
-  loadMessages();
+    if (user === "bibekji" && pass === "essencebbk5") {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+        loadChats();
+    } else {
+        document.getElementById("loginError").textContent = "Invalid username or password!";
+    }
 }
 
-// Load messages for selected user
-function loadMessages() {
-  if (!selectedUser) return;
+window.login = login;
 
-  let msgBox = document.getElementById("messages");
-  msgBox.innerHTML = "";
+/* --------------------- Load All User Chats ---------------------- */
+function loadChats() {
+    const chatsRef = ref(db, "chats/");
 
-  db.ref("messages/" + selectedUser).on("child_added", (snap) => {
-    let m = snap.val();
-    let bubble = document.createElement("div");
+    onValue(chatsRef, (snapshot) => {
+        const userList = document.getElementById("userList");
+        userList.innerHTML = "";
 
-    bubble.className = "msg " + (m.user === "admin" ? "admin" : "client");
-    bubble.textContent = m.text;
+        snapshot.forEach((userChat) => {
+            const userId = userChat.key;
+            const messages = userChat.val();
 
-    msgBox.appendChild(bubble);
-    msgBox.scrollTop = msgBox.scrollHeight;
-  });
+            const box = document.createElement("div");
+            box.className = "userBox";
+
+            box.innerHTML = `
+                <h3>User: ${userId}</h3>
+                <button class="deleteBtn" onclick="deleteConversation('${userId}')">Delete Conversation</button>
+                <div class="messages" id="msg-${userId}"></div>
+                <input type="text" id="reply-${userId}" placeholder="Reply message...">
+                <button onclick="sendReply('${userId}')">Send Reply</button>
+            `;
+
+            userList.appendChild(box);
+
+            const msgBox = document.getElementById(`msg-${userId}`);
+            msgBox.innerHTML = "";
+
+            for (let msgId in messages) {
+                const msg = messages[msgId];
+
+                msgBox.innerHTML += `
+                    <p class="${msg.sender === 'user' ? 'sent' : 'received'}">
+                        ${msg.text}
+                        <button class="deleteBtn" style="font-size:10px" onclick="deleteMessage('${userId}', '${msgId}')">X</button>
+                    </p>
+                `;
+            }
+        });
+    });
 }
 
-// Send admin message
-document.getElementById("send").onclick = () => {
-  let text = document.getElementById("admin-msg").value;
-  if (text.trim() === "" || !selectedUser) return;
+/* --------------------- Send Reply to User ---------------------- */
+window.sendReply = function(userId) {
+    const input = document.getElementById(`reply-${userId}`);
+    const text = input.value.trim();
+    if (text === "") return;
 
-  db.ref("messages/" + selectedUser).push({
-    text: text,
-    time: Date.now(),
-    user: "admin"
-  });
+    push(ref(db, "chats/" + userId), {
+        sender: "admin",
+        text: text,
+        time: Date.now()
+    });
 
-  document.getElementById("admin-msg").value = "";
+    input.value = "";
 };
+
+/* --------------------- Delete Single Message ---------------------- */
+window.deleteMessage = function(userId, msgId) {
+    remove(ref(db, `chats/${userId}/${msgId}`));
+};
+
+/* --------------------- Delete Entire Conversation ---------------------- */
+window.deleteConversation = function(userId) {
+    if (confirm("Delete entire chat?")) {
+        remove(ref(db, "chats/" + userId));
+    }
+};
+
 </script>
 
 </body>
